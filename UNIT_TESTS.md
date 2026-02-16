@@ -4,9 +4,22 @@ This document describes the unit tests for the Student-Teacher application contr
 
 ## Overview
 
-**Total Tests:** 13  
+**Total Tests:** 17  
 **Framework:** JUnit 5 with Mockito  
 **Test Type:** Unit tests with mocked dependencies
+
+---
+
+## CustomUserDetailsServiceTest (4 tests)
+
+Tests for authentication and user loading functionality.
+
+| Test Name | Description |
+|-----------|-------------|
+| `loadUserByUsername_student` | Verifies that a student can be authenticated by email and assigned ROLE_STUDENT. |
+| `loadUserByUsername_teacher` | Verifies that a teacher can be authenticated by email and assigned ROLE_TEACHER. |
+| `loadUserByUsername_notFound` | Verifies that UsernameNotFoundException is thrown for non-existent users. |
+| `loadUserByUsername_studentPriority` | Verifies that student lookup happens before teacher lookup. |
 
 ---
 
