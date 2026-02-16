@@ -19,6 +19,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+/* Mockito allows you to:
+
+Fake repositories
+
+Fake security Principal
+
+Test controller logic without database */
 
 /**
  * Unit tests for StudentController.
@@ -27,7 +34,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class StudentControllerTest {
 
-    @Mock
+    @Mock //fake objects
     private StudentRepository studentRepo;
 
     @Mock
@@ -56,7 +63,11 @@ class StudentControllerTest {
     /**
      * Verifies that a student can enroll in a course.
      * The course should be added to the student's course set.
-     */
+    ei mock variable gulo ke controller er kache send kora hoy when controller asks for them to test the controller functions 
+    and also save for the aving one, no real db is used
+    
+    
+    */
     @Test
     @DisplayName("Student can enroll in a course")
     void takeCourse() {
@@ -65,10 +76,10 @@ class StudentControllerTest {
         when(courseRepo.findById(1L)).thenReturn(Optional.of(testCourse));
         when(studentRepo.save(any(Student.class))).thenReturn(testStudent);
 
-        String result = studentController.takeCourse(1L, principal);
+        String result = studentController.takeCourse(1L, principal); //controller er kajer result
 
         assertEquals("Course taken", result);
-        assertTrue(testStudent.getCourses().contains(testCourse));
+        assertTrue(testStudent.getCourses().contains(testCourse)); //verify whether the logic was ok eikhane was the course added for the given student
     }
 
     /**
@@ -79,7 +90,7 @@ class StudentControllerTest {
     @DisplayName("Student can drop a course")
     void removeCourse() {
         Course spyCourse = spy(testCourse);
-        when(spyCourse.getId()).thenReturn(1L);
+        when(spyCourse.getId()).thenReturn(1L);  //when controller this return that
         testStudent.getCourses().add(spyCourse);
 
         when(principal.getName()).thenReturn("john.doe@student.edu");
