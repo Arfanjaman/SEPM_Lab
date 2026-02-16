@@ -30,6 +30,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Make Maven wrapper executable
+        run: chmod +x ./mvnw
+
       - name: Run Unit Tests
         run: ./mvnw test -Dtest="StudentControllerTest,TeacherControllerTest,WebControllerTest,CustomUserDetailsServiceTest" -B
 
