@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 { font-size: 24px; }
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .navbar a:hover { background: rgba(255,255,255,0.3); }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .welcome {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .welcome h2 { color: #333; margin-bottom: 10px; }
+        .welcome p { color: #666; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+        .card-header h3 { margin: 0; }
+        .card-body { padding: 20px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { 
+            background: #f8f9fa; 
+            font-weight: 600;
+            color: #555;
+        }
+        tr:hover { background: #f8f9fa; }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-enrolled {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🎓 Student Portal</h1>
+        <div class="user-info">
+            <span>Welcome, <strong th:text="${student?.name ?: 'Student'}">Student</strong></span>
+            <a th:href="@{/logout}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome">
+            <h2>📚 Student Dashboard</h2>
+            <p>View and manage your course enrollments</p>
+        </div>
+
+        <div class="grid">
+            <!-- My Enrolled Courses -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>📖 My Enrolled Courses</h3>
+                </div>
+                <div class="card-body">
+                    <table th:if="${!myCourses.isEmpty()}">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Credits</th>
+                                <th>Teacher</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="course : ${myCourses}">
+                                <td th:text="${course.title}">Course Name</td>
+                                <td th:text="${course.credit}">3</td>
+                                <td th:text="${course.teacher?.name ?: 'N/A'}">Teacher Name</td>
+                                <td>
+                                    <form th:action="@{/student/courses/drop/{id}(id=${course.id})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger">Drop</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div th:if="${myCourses.isEmpty()}" class="empty">
+                        <p>You haven't enrolled in any courses yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Courses -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>📋 Available Courses</h3>
+                </div>
+                <div class="card-body">
+                    <table th:if="${!allCourses.isEmpty()}">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Credits</th>
+                                <th>Teacher</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="course : ${allCourses}">
+                                <td th:text="${course.title}">Course Name</td>
+                                <td th:text="${course.credit}">3</td>
+                                <td th:text="${course.teacher?.name ?: 'N/A'}">Teacher Name</td>
+                                <td>
+                                    <span th:if="${myCourses.contains(course)}" class="badge badge-enrolled">✓ Enrolled</span>
+                                    <form th:unless="${myCourses.contains(course)}" th:action="@{/student/courses/enroll/{id}(id=${course.id})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-success">Enroll</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div th:if="${allCourses.isEmpty()}" class="empty">
+                        <p>No courses available at the moment.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

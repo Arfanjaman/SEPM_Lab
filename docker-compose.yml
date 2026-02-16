@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: university
+      POSTGRES_USER: jaman
+      POSTGRES_PASSWORD: 2107030
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    ports:
+      - "9090:8080"
+    depends_on:
+      - postgres
