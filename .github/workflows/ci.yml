@@ -10,7 +10,22 @@ on:
 jobs:
   test:
     name: Run Tests
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: jaman
+          POSTGRES_PASSWORD: 2107030
+          POSTGRES_DB: university
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -31,14 +46,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Make Maven wrapper executable
+        run: chmod +x ./mvnw
+
       - name: Run Unit Tests
-        run: .\mvnw.cmd test -Dtest="StudentControllerTest,TeacherControllerTest,WebControllerTest,CustomUserDetailsServiceTest" -B
+        run: ./mvnw test -Dtest="StudentControllerTest,TeacherControllerTest,WebControllerTest,CustomUserDetailsServiceTest" -B
 
       - name: Run Integration Tests
-        run: .\mvnw.cmd test -Dtest="StudentTeacherIntegrationTest" -B
+        run: ./mvnw test -Dtest="StudentTeacherIntegrationTest" -B
 
       - name: Run All Tests
-        run: .\mvnw.cmd test -B
+        run: ./mvnw test -B
 
       - name: Upload Test Results
         if: always()
